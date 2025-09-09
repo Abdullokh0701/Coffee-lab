@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoffeeLab — кофейня</title>
+  <meta name="description" content="CoffeeLab — авторская кофейня. Меню, заказ, контакты." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root{
+      --bg: #0f0e0e;
+      --bg-soft: #181616;
+      --text: #f6f3ee;
+      --muted: #cfc7bd;
+      --brand: #b07a46; /* теплый кофе */
+      --brand-2: #6a4b33; /* эспрессо */
+      --accent: #efc078; /* латте-пенка */
+      --ok: #2ecc71;
+      --error: #ff6b6b;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+
+    /* ===== RESET ===== */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 10% -10%, #1d1712 0%, transparent 50%),
+                  radial-gradient(900px 600px at 110% -20%, #1e140e 0%, transparent 60%),
+                  var(--bg);
+      line-height:1.6;
+    }
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+    
+    /* ===== LAYOUT ===== */
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+    .section{padding:72px 0}
+    .section h2{font-size:42px;line-height:1.1;margin:0 0 18px}
+    .muted{color:var(--muted)}
+
+    /* ===== NAVBAR ===== */
+    .nav{position:sticky;top:0;z-index:50;background:rgba(15,14,14,.6);backdrop-filter: blur(10px);border-bottom:1px solid #231f1a}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo-mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow: var(--shadow);display:grid;place-items:center}
+    .logo-mark:before{content:"☕";filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+    .logo span{letter-spacing:.2px}
+    .navlinks{display:flex;gap:18px}
+    .navlinks a{padding:10px 12px;border-radius:12px;opacity:.9}
+    .navlinks a:hover{background:#201a15}
+    .right-actions{display:flex;align-items:center;gap:10px}
+    .icon-btn{border:1px solid #2a221c;background:#1a1511;border-radius:14px;height:40px;min-width:40px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow)}
+    .icon-btn:hover{transform:translateY(-1px)}
+    .badge{position:absolute;margin-left:22px;margin-top:-18px;background:var(--accent);color:#2b1c11;border-radius:999px;font-weight:700;padding:2px 7px;font-size:12px;border:1px solid #2b1c11}
+
+    /* ===== HERO ===== */
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center;padding:36px 0 56px}
+    .hero h1{font-size:58px;line-height:1.05;margin:10px 0 12px}
+    .hero p{font-size:18px;color:var(--muted)}
+    .cta{display:flex;gap:12px;margin-top:18px}
+    .btn{border:none;border-radius:16px;padding:14px 18px;font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--brand));color:#2b1c11}
+    .btn-ghost{background:#1a1511;border:1px solid #33261d;color:var(--text)}
+    .hero-card{background:linear-gradient(180deg, #1e1712, #141211);border:1px solid #2a221c;border-radius:var(--radius-xl);padding:18px;box-shadow:var(--shadow)}
+
+    .stat{display:flex;gap:12px;align-items:center;margin-top:12px;color:var(--muted)}
+    .stat b{color:var(--accent)}
+
+    /* ===== MENU ===== */
+    .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:linear-gradient(180deg,#1a1511,#120f0d);border:1px solid #2b221c;border-radius:var(--radius-lg);padding:16px;position:relative;overflow:hidden}
+    .price{position:absolute;top:12px;right:12px;background:#1f1711;border:1px solid #2a221c;border-radius:999px;padding:6px 10px;font-weight:700}
+    .thumb{height:150px;border-radius:14px;background:radial-gradient(280px 120px at 20% 30%, #2a1e16, transparent 70%),
+                           radial-gradient(250px 140px at 80% 30%, #3a2a1f, transparent 70%),
+                           linear-gradient(180deg,#15110f,#0f0d0b);display:grid;place-items:center;font-size:54px}
+    .card h3{margin:12px 0 6px}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+    .tag{font-size:12px;background:#211912;border:1px solid #35271d;border-radius:999px;padding:4px 8px;color:var(--muted)}
+    .card .btn{width:100%}
+
+    /* ===== ABOUT ===== */
+    .about{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .panel{background:linear-gradient(180deg,#1a1511,#120f0d);border:1px solid #2b221c;border-radius:var(--radius-xl);padding:20px}
+
+    /* ===== LOCATIONS ===== */
+    .locations{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .loc{border:1px solid #2b221c;border-radius:16px;padding:16px;background:#15110e}
+
+    /* ===== CONTACT ===== */
+    form{display:grid;gap:12px}
+    input, textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #3a2a1f;background:#15110e;color:var(--text)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .hint{font-size:13px;color:var(--muted)}
+
+    /* ===== FLOATING CART ===== */
+    .cart-btn{position:fixed;right:22px;bottom:22px}
+    .cart{position:fixed;right:22px;bottom:88px;width:320px;background:#15110e;border:1px solid #2b221c;border-radius:18px;padding:14px;box-shadow:var(--shadow);display:none}
+    .cart.open{display:block}
+    .cart h4{margin:4px 0 10px}
+    .cart-items{max-height:260px;overflow:auto;display:grid;gap:8px;margin:8px 0}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;background:#1a1511;border:1px solid #2b221c;padding:8px 10px;border-radius:12px}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:26px;height:26px;border-radius:8px;border:1px solid #2b221c;background:#221912;color:#f7f3ee;cursor:pointer}
+    .empty{color:var(--muted);text-align:center;padding:18px}
+
+    /* ===== FOOTER ===== */
+    footer{border-top:1px solid #2a221c;padding:24px 0;color:var(--muted)}
+
+    /* ===== UTIL ===== */
+    .pill{border:1px solid #2a221c;background:#1a1511;border-radius:999px;padding:6px 10px;font-size:13px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr}
+      .menu-grid{grid-template-columns:1fr 1fr}
+      .about, .locations, .grid-2, .form-row{grid-template-columns:1fr}
+      .navlinks{display:none}
+    }
+    @media (max-width: 560px){
+      .menu-grid{grid-template-columns:1fr}
+      .hero h1{font-size:44px}
+      .section h2{font-size:34px}
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- ===== NAVBAR ===== -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="#home" class="logo">
+        <span class="logo-mark"></span>
+        <span>CoffeeLab</span>
+      </a>
+      <div class="navlinks">
+        <a href="#menu">Меню</a>
+        <a href="#about">О нас</a>
+        <a href="#locations">Локации</a>
+        <a href="#contact">Контакты</a>
+      </div>
+      <div class="right-actions">
+        <button id="darkToggle" class="icon-btn" title="Сменить тему">🌓</button>
+        <button id="openCart" class="icon-btn" title="Корзина">🧺<span id="cartCount" class="badge" hidden>0</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+   <!-- ===== HERO ===== -->
+<header id="home" class="container hero">
+  <div>
+    <div class="pill">Новая обжарка • ограниченная серия</div>
+    <h1>Кофе, как <em>эксперимент</em> — добрый результат каждый раз.</h1>
+    <p>CoffeeLab — авторская кофейня с фокусом на свежей обжарке и честных рецептах. Закажите любимый напиток онлайн или загляните к нам.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#menu">Выбрать напиток</a>
+      <a class="btn btn-ghost" href="#about">Узнать о CoffeeLab</a>
+    </div>
+    <div class="stat">⭐️ <b>4.9/5</b> на основе 1 240 отзывов • <span class="muted">с 2020 года</span></div>
+  </div>
+  <div class="hero-card">
+    <div class="grid-2">
+      <div>
+        <h3 style="margin:6px 0">Фирменный раф «Панна»</h3>
+        <p class="muted">Ваниль, сливочные нотки и двойной эспрессо. Идеален для уютных вечеров.</p>
+        <div class="tags">
+          <span class="tag">Сладкий</span>
+          <span class="tag">500 мл</span>
+          <span class="tag">Сезонный</span>
+        </div>
+        <button class="btn btn-primary" data-add='{"id":"panna-raf","name":"Раф Панна","price":1890}'>В корзину — 1 890 ₸</button>
+      </div>
+      <div class="thumb">
+        <img src="img/1кофе.jpg" alt="Раф Панна" style="height:150px; border-radius:14px; object-fit:cover;" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MENU ===== -->
+<section id="menu" class="section">
+  <div class="container">
+    <h2>Меню</h2>
+    <p class="muted">Выберите напиток — добавьте в корзину. Оплата и доставка подключаются легко (интеграция с кассами добавляется позже).</p>
+    <div class="menu-grid">
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="price">1 200 ₸</div>
+        <div class="thumb">
+          <img src="img/2 coffee.jpg" alt="Эспрессо" style="height:150px; border-radius:14px; object-fit:cover;">
+        </div>
+        <h3>Эспрессо</h3>
+        <p class="muted">Классика с плотным телом и ореховыми оттенками.</p>
+        <div class="tags"><span class="tag">30 мл</span><span class="tag">Без сахара</span></div>
+        <button class="btn btn-ghost" data-add='{"id":"espresso","name":"Эспрессо","price":1200}'>Добавить</button>
+      </article>
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="price">1 600 ₸</div>
+        <div class="thumb">
+          <img src="img/3coffee.jpg" alt="Капучино" style="height:150px; border-radius:14px; object-fit:cover;">
+        </div>
+        <h3>Капучино</h3>
+        <p class="muted">Мягкий баланс эспрессо и молочной пенки.</p>
+        <div class="tags"><span class="tag">250 мл</span><span class="tag">Молоко</span></div>
+        <button class="btn btn-ghost" data-add='{"id":"cappuccino","name":"Капучино","price":1600}'>Добавить</button>
+      </article>
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="price">1 750 ₸</div>
+        <div class="thumb">
+          <img src="img/4coffe.jpg" alt="Латте" style="height:150px; border-radius:14px; object-fit:cover;">
+        </div>
+        <h3>Латте</h3>
+        <p class="muted">Нежный, с карамельными нотами. Ваш ежедневный фаворит.</p>
+        <div class="tags"><span class="tag">350 мл</span><span class="tag">Мягкий</span></div>
+        <button class="btn btn-ghost" data-add='{"id":"latte","name":"Латте","price":1750}'>Добавить</button>
+      </article>
+      <!-- Card 4 -->
+      <article class="card">
+        <div class="price">2 100 ₸</div>
+        <div class="thumb">
+          <img src="img/5coffee.jpg" alt="Мокко" style="height:150px; border-radius:14px; object-fit:cover;">
+        </div>
+        <h3>Мокко</h3>
+        <p class="muted">Шоколад + эспрессо + молоко = любовь.</p>
+        <div class="tags"><span class="tag">Сладкий</span><span class="tag">350 мл</span></div>
+        <button class="btn btn-ghost" data-add='{"id":"mocha","name":"Мокко","price":2100}'>Добавить</button>
+      </article>
+      <!-- Card 5 -->
+      <article class="card">
+        <div class="price">1 650 ₸</div>
+        <div class="thumb">
+          <img src="img/6coffee.jpg" alt="Айс-латте" style="height:150px; border-radius:14px; object-fit:cover;">
+        </div>
+        <h3>Айс-латте</h3>
+        <p class="muted">Освежает и бодрит. Отличен летом.</p>
+        <div class="tags"><span class="tag">Холодный</span><span class="tag">350 мл</span></div>
+        <button class="btn btn-ghost" data-add='{"id":"ice-latte","name":"Айс-латте","price":1650}'>Добавить</button>
+      </article>
+      <!-- Card 6 -->
+      <article class="card">
+        <div class="price">1 900 ₸</div>
+        <div class="thumb">
+          <img src="img/1кофе.jpg" alt="Раф ванильный" style="height:150px; border-radius:14px; object-fit:cover;">
+        </div>
+        <h3>Раф ванильный</h3>
+        <p class="muted">Сливочный и согревающий, для долгих разговоров.</p>
+        <div class="tags"><span class="tag">Сливки</span><span class="tag">Сладкий</span></div>
+        <button class="btn btn-ghost" data-add='{"id":"raf-vanilla","name":"Раф ванильный","price":1900}'>Добавить</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about" class="section">
+    <div class="container about">
+      <div class="panel">
+        <h2>О CoffeeLab</h2>
+        <p class="muted">Мы начали как маленький бар с одним рожком и большим желанием делать вкусно. Сегодня CoffeeLab — это лаборатория вкуса: свежая обжарка, проверенные поставщики, вода правильной минерализации и взвешенные рецепты.</p>
+        <ul>
+          <li>☑ Свежая обжарка еженедельно</li>
+          <li>☑ Бариста уровня SCA</li>
+          <li>☑ Альтернативное молоко: овсяное, миндальное</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3 style="margin-top:0">Как мы завариваем</h3>
+        <div class="grid-2">
+          <div>
+            <h4>Эспрессо</h4>
+            <p class="muted">1:2, 27–30 сек. Плотное тело, орех, тёмный шоколад.</p>
+          </div>
+          <div>
+            <h4>Пуровер</h4>
+            <p class="muted">V60 15:250, 94°C, 2:30. Чистый профиль и цветочные ноты.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LOCATIONS ===== -->
+  <section id="locations" class="section">
+    <div class="container">
+      <h2>Где нас найти</h2>
+      <p class="muted">Откройте ближайшую кофейню CoffeeLab. Режим работы: ежедневно 08:00–22:00.</p>
+      <div class="locations">
+        <div class="loc">
+          <h4>Центр</h4>
+          <p class="muted">ул. Примерная, 10 • внутри коворкинга</p>
+          <div class="tags"><span class="tag">Wi‑Fi</span><span class="tag">To Go</span><span class="tag">Питомцы ОК</span></div>
+        </div>
+        <div class="loc">
+          <h4>Набережная</h4>
+          <p class="muted">пр-т Речной, 45 • вид на реку</p>
+          <div class="tags"><span class="tag">Терраса</span><span class="tag">Bike‑стенд</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact" class="section">
+    <div class="container">
+      <h2>Свяжитесь с нами</h2>
+      <div class="grid-2">
+        <div>
+          <form id="contactForm" novalidate>
+            <div class="form-row">
+              <div>
+                <label for="name">Имя</label>
+                <input id="name" name="name" placeholder="Как к вам обращаться?" required />
+              </div>
+              <div>
+                <label for="phone">Телефон</label>
+                <input id="phone" name="phone" placeholder="+7 (___) ___‑__‑__" pattern="^[+0-9 ()-]{8,}$" required />
+              </div>
+            </div>
+            <div>
+              <label for="message">Сообщение</label>
+              <textarea id="message" name="message" rows="4" placeholder="Ваш вопрос"></textarea>
+              <div class="hint">Мы ответим в течение дня.</div>
+            </div>
+            <button class="btn btn-primary" type="submit">Отправить</button>
+            <div id="formResult" class="hint" role="status" aria-live="polite" style="margin-top:8px"></div>
+          </form>
+        </div>
+        <div>
+          <div class="panel">
+            <h3 style="margin-top:4px">Партнёрство и кейтеринг</h3>
+            <p class="muted">Ищете кофе для офиса или мероприятия? Напишите нам — подберём зерно, оборудование и бариста.</p>
+            <p class="pill">email: hello@coffeelab.example</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>© <span id="year"></span> CoffeeLab • Все права защищены</div>
+      <div class="muted">Сделано с ☕ и JS</div>
+    </div>
+  </footer>
+
+  <!-- ===== FLOATING CART ===== -->
+  <button id="fabCart" class="btn btn-primary cart-btn">Открыть корзину 🧺</button>
+  <aside id="cart" class="cart" aria-label="Корзина">
+    <h4>Ваш заказ</h4>
+    <div id="cartItems" class="cart-items"></div>
+    <div id="emptyState" class="empty">Корзина пуста. Добавьте что‑нибудь из меню.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <strong>Итого: <span id="cartTotal">0 ₸</span></strong>
+      <button id="checkout" class="btn btn-primary">Оформить</button>
+    </div>
+  </aside>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    // ===== UTILS =====
+    const $ = (s,root=document)=>root.querySelector(s);
+    const $$ = (s,root=document)=>[...root.querySelectorAll(s)];
+    const money = n => new Intl.NumberFormat('ru-RU').format(n) + ' ₸';
+
+    // ===== THEME TOGGLE (light/dark) =====
+    const darkToggle = $('#darkToggle');
+    const setTheme = mode => {
+      document.documentElement.style.setProperty('--bg', mode==='light' ? '#fcf9f5' : '#0f0e0e');
+      document.documentElement.style.setProperty('--bg-soft', mode==='light' ? '#fff' : '#181616');
+      document.documentElement.style.setProperty('--text', mode==='light' ? '#20150f' : '#f6f3ee');
+      document.body.dataset.theme = mode;
+      localStorage.setItem('theme', mode);
+    }
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    darkToggle.addEventListener('click',()=> setTheme(document.body.dataset.theme==='dark'?'light':'dark'));
+
+    // ===== YEAR IN FOOTER =====
+    $('#year').textContent = new Date().getFullYear();
+
+    // ===== SMOOTH SCROLL =====
+    $$('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href');
+        if(id.length>1){
+          e.preventDefault();
+          $(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      })
+    })
+
+    // ===== CART STATE =====
+    const cartBtn = $('#fabCart');
+    const openCartBtn = $('#openCart');
+    const cart = $('#cart');
+    const list = $('#cartItems');
+    const totalEl = $('#cartTotal');
+    const countBadge = $('#cartCount');
+    const emptyState = $('#emptyState');
+
+    const cartState = JSON.parse(localStorage.getItem('coffeelab_cart')||'{}');
+
+    function saveCart(){
+      localStorage.setItem('coffeelab_cart', JSON.stringify(cartState));
+    }
+
+    function cartCount(){
+      return Object.values(cartState).reduce((s,i)=>s+i.qty,0);
+    }
+
+    function cartTotal(){
+      return Object.values(cartState).reduce((s,i)=>s+i.qty*i.price,0);
+    }
+
+    function renderCart(){
+      list.innerHTML = '';
+      const items = Object.values(cartState);
+      if(items.length===0){
+        emptyState.style.display = 'block';
+      } else {
+        emptyState.style.display = 'none';
+      }
+      items.forEach(item=>{
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <div>
+            <div><strong>${item.name}</strong></div>
+            <div class="muted">${money(item.price)}</div>
+          </div>
+          <div class="qty">
+            <button aria-label="Уменьшить" data-dec="${item.id}">−</button>
+            <span>${item.qty}</span>
+            <button aria-label="Увеличить" data-inc="${item.id}">+</button>
+            <button aria-label="Удалить" data-del="${item.id}" title="Удалить" style="margin-left:6px">✕</button>
+          </div>`;
+        list.appendChild(row);
+      })
+      const c = cartCount();
+      totalEl.textContent = money(cartTotal());
+      countBadge.textContent = c;
+      countBadge.hidden = c===0;
+    }
+
+    function addToCart(item){
+      if(!cartState[item.id]) cartState[item.id] = {...item, qty:0};
+      cartState[item.id].qty++;
+      saveCart();
+      renderCart();
+      cart.classList.add('open');
+    }
+
+    list.addEventListener('click', e=>{
+      const t = e.target;
+      const idInc = t.getAttribute('data-inc');
+      const idDec = t.getAttribute('data-dec');
+      const idDel = t.getAttribute('data-del');
+      if(idInc){cartState[idInc].qty++;}
+      if(idDec){cartState[idDec].qty = Math.max(0, cartState[idDec].qty-1); if(cartState[idDec].qty===0) delete cartState[idDec];}
+      if(idDel){delete cartState[idDel];}
+      saveCart();
+      renderCart();
+    })
+
+    cartBtn.addEventListener('click', ()=> cart.classList.toggle('open'));
+    openCartBtn.addEventListener('click', ()=> cart.classList.toggle('open'));
+
+    // Bind add-to-cart buttons
+    $$('[data-add]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const data = JSON.parse(btn.getAttribute('data-add'));
+        addToCart(data);
+      })
+    })
+
+    // Initial render
+    renderCart();
+
+    // ===== CONTACT FORM (demo) =====
+    const form = $('#contactForm');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData(form);
+      const name = (fd.get('name')||'').toString().trim();
+      const phone = (fd.get('phone')||'').toString().trim();
+      if(!name || !phone){
+        $('#formResult').textContent = 'Пожалуйста, заполните имя и телефон.';
+        $('#formResult').style.color = 'var(--error)';
+        return;
+      }
+      // Здесь можно подключить отправку через fetch на ваш бэкенд/почту
+      $('#formResult').textContent = 'Спасибо! Мы скоро свяжемся с вами.';
+      $('#formResult').style.color = 'var(--ok)';
+      form.reset();
+    })
+  // ===== HERO SLIDES =====
+  const heroSlides = [
+    {img:'img/1кофе.jpg', name:'Раф Панна', desc:'Ваниль, сливочные нотки и двойной эспрессо. Идеален для уютных вечеров.', tags:['Сладкий','500 мл','Сезонный'], price:1890, id:'panna-raf'},
+    {img:'img/2 coffee.jpg', name:'Эспрессо', desc:'Классика с плотным телом и ореховыми оттенками.', tags:['30 мл','Без сахара'], price:1200, id:'espresso'},
+    {img:'img/3coffee.jpg', name:'Капучино', desc:'Мягкий баланс эспрессо и молочной пенки.', tags:['250 мл','Молоко'], price:1600, id:'cappuccino'},
+    {img:'img/4coffe.jpg', name:'Латте', desc:'Нежный, с карамельными нотами. Ваш ежедневный фаворит.', tags:['350 мл','Мягкий'], price:1750, id:'latte'},
+    {img:'img/5coffee.jpg', name:'Мокко', desc:'Шоколад + эспрессо + молоко = любовь.', tags:['Сладкий','350 мл'], price:2100, id:'mocha'},
+    {img:'img/6coffee.jpg', name:'Айс-латте', desc:'Освежает и бодрит. Отличен летом.', tags:['Холодный','350 мл'], price:1650, id:'ice-latte'}
+  ];
+
+  let currentSlide = 0;
+  const heroCard = document.querySelector('.hero-card');
+
+  function showSlide(index){
+    const slide = heroSlides[index];
+    heroCard.innerHTML = `
+      <div class="grid-2">
+        <div>
+          <h3 style="margin:6px 0">${slide.name}</h3>
+          <p class="muted">${slide.desc}</p>
+          <div class="tags">
+            ${slide.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
+          </div>
+          <button class="btn btn-primary" data-add='${JSON.stringify({id:slide.id,name:slide.name,price:slide.price})}'>
+            В корзину — ${slide.price.toLocaleString('ru-RU')} ₸
+          </button>
+        </div>
+        <div class="thumb">
+          <img src="${slide.img}" alt="${slide.name}" style="height:150px; border-radius:14px; object-fit:cover;" />
+        </div>
+      </div>
+    `;
+
+    const btn = heroCard.querySelector('button[data-add]');
+    btn.addEventListener('click', ()=>{
+      const data = JSON.parse(btn.getAttribute('data-add'));
+      addToCart(data);
+    });
+  }
+
+  showSlide(currentSlide);
+  setInterval(()=>{
+    currentSlide = (currentSlide + 1) % heroSlides.length;
+    showSlide(currentSlide);
+  }, 3000); // каждые 3 секунды
+</script>
+
+</body>
+</html>
